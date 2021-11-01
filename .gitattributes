@@ -1,0 +1,2 @@
+ios/Runner/GoogleService-Info.plist filter=git-crypt diff=git-crypt
+.gitattributes !filter !diff
