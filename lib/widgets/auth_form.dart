@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_course_firebase_app/widgets/user_image_picker.dart';
 
 class AuthForm extends StatefulWidget {
-  final Function submitAuth;
+  final void Function(String email, String password, String username, bool isLogin, File? imageFile) submitAuth;
   final isLoading;
 
   const AuthForm(
@@ -20,16 +23,21 @@ class _AuthFormState extends State<AuthForm> {
   String _userName = '';
   String _userPassword = '';
   bool _isLogin = true;
+  File? _userImageFile;
 
   void _trySubmit() {
     if (_formKey.currentState == null) return;
     final _isValid = _formKey.currentState!.validate();
-    if (_isValid) {
+    if (_isValid && (_isLogin || _userImageFile != null)) {
       _formKey.currentState!.save();
       FocusScope.of(context).unfocus();
       print('$_userEmail $_userName $_userPassword');
-      widget.submitAuth(_userEmail, _userPassword, _userName, _isLogin);
+      widget.submitAuth(_userEmail, _userPassword, _userName, _isLogin, _userImageFile);
     }
+  }
+
+  void _pickedImage(File image) {
+    _userImageFile = image;
   }
 
   @override
@@ -44,6 +52,7 @@ class _AuthFormState extends State<AuthForm> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                if (!_isLogin) UserImagePicker(_pickedImage),
                 TextFormField(
                   key: ValueKey('email'),
                   validator: (value) {
